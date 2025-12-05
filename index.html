@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>操作系统原理：从入门到精通 - 交互式学习路径</title>
+    <title>操作系统原理：交互式学习系统</title>
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -14,293 +14,184 @@
             --code-bg: #2d2d2d;
             --code-text: #2ecc71;
             --card-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --modal-bg: rgba(0, 0, 0, 0.85);
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Segoe UI', "Microsoft YaHei", sans-serif;
-            line-height: 1.6;
-            color: var(--text-color);
-            background-color: #f8f9fa;
-        }
-
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', "Microsoft YaHei", sans-serif; line-height: 1.6; color: var(--text-color); background-color: #f8f9fa; }
+        
         /* 进度条 */
-        #progress-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 5px;
-            background: transparent;
-            z-index: 1000;
-        }
-        #progress-bar {
-            height: 100%;
-            background: var(--accent-color);
-            width: 0%;
-            transition: width 0.2s;
-        }
+        #progress-container { position: fixed; top: 0; left: 0; width: 100%; height: 5px; background: transparent; z-index: 1000; }
+        #progress-bar { height: 100%; background: var(--accent-color); width: 0%; transition: width 0.2s; }
 
         /* 布局容器 */
-        .container {
-            display: flex;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        /* 侧边导航 */
-        .sidebar {
-            width: 250px;
-            position: sticky;
-            top: 40px;
-            height: fit-content;
-            padding-right: 20px;
-            border-right: 2px solid #eee;
-            display: none; /* Mobile default hidden */
-        }
+        .container { display: flex; max-width: 1200px; margin: 0 auto; padding: 20px; }
         
-        @media(min-width: 768px) {
-            .sidebar { display: block; }
-        }
+        /* 侧边导航 (主页面) */
+        .sidebar { width: 250px; position: sticky; top: 40px; height: fit-content; padding-right: 20px; border-right: 2px solid #eee; display: none; }
+        @media(min-width: 768px) { .sidebar { display: block; } }
 
-        .nav-link {
-            display: block;
-            padding: 10px;
-            color: #7f8c8d;
-            text-decoration: none;
-            border-radius: 5px;
-            margin-bottom: 5px;
-            transition: all 0.3s;
-        }
-
-        .nav-link:hover, .nav-link.active {
-            background-color: var(--light-bg);
-            color: var(--accent-color);
-            font-weight: bold;
-            padding-left: 15px;
-        }
+        .nav-link { display: block; padding: 10px; color: #7f8c8d; text-decoration: none; border-radius: 5px; margin-bottom: 5px; transition: all 0.3s; }
+        .nav-link:hover, .nav-link.active { background-color: var(--light-bg); color: var(--accent-color); font-weight: bold; padding-left: 15px; }
 
         /* 主内容区 */
-        .main-content {
-            flex: 1;
-            padding-left: 0;
-        }
-        
-        @media(min-width: 768px) {
-            .main-content { padding-left: 40px; }
-        }
+        .main-content { flex: 1; padding-left: 0; }
+        @media(min-width: 768px) { .main-content { padding-left: 40px; } }
 
         /* 头部 */
-        header {
-            text-align: center;
-            margin-bottom: 50px;
-            padding: 60px 20px;
-            background: linear-gradient(135deg, var(--primary-color), #34495e);
-            color: white;
-            border-radius: 10px;
-            box-shadow: var(--card-shadow);
-        }
-        
+        header { text-align: center; margin-bottom: 50px; padding: 60px 20px; background: linear-gradient(135deg, var(--primary-color), #34495e); color: white; border-radius: 10px; box-shadow: var(--card-shadow); position: relative; overflow: hidden; }
         header h1 { font-size: 2.5rem; margin-bottom: 15px; }
-        header p { font-size: 1.1rem; opacity: 0.9; }
+        header p { font-size: 1.1rem; opacity: 0.9; margin-bottom: 25px; }
+        
+        .btn-guide {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1rem;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+            transition: transform 0.2s, background-color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-guide:hover { transform: scale(1.05); background-color: #2980b9; }
 
         /* 先修知识卡片 */
-        .prerequisites {
-            background: #fff3cd;
-            border-left: 5px solid #ffc107;
-            padding: 20px;
-            margin-bottom: 40px;
-            border-radius: 5px;
-        }
+        .prerequisites { background: #fff3cd; border-left: 5px solid #ffc107; padding: 20px; margin-bottom: 40px; border-radius: 5px; }
 
         /* 时间轴站点 */
-        .station {
-            position: relative;
-            padding-bottom: 60px;
-            border-left: 3px solid #ddd;
-            padding-left: 30px;
-            margin-left: 10px;
-        }
-
-        .station::before {
-            content: '';
-            position: absolute;
-            left: -11px;
-            top: 0;
-            width: 20px;
-            height: 20px;
-            background: var(--accent-color);
-            border-radius: 50%;
-            border: 4px solid #fff;
-            box-shadow: 0 0 0 2px var(--accent-color);
-        }
-
-        .station-header {
-            margin-bottom: 20px;
-        }
-
-        .station-title {
-            font-size: 1.8rem;
-            color: var(--primary-color);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .badge {
-            font-size: 0.8rem;
-            background: var(--accent-color);
-            color: white;
-            padding: 2px 8px;
-            border-radius: 12px;
-            vertical-align: middle;
-        }
+        .station { position: relative; padding-bottom: 60px; border-left: 3px solid #ddd; padding-left: 30px; margin-left: 10px; }
+        .station::before { content: ''; position: absolute; left: -11px; top: 0; width: 20px; height: 20px; background: var(--accent-color); border-radius: 50%; border: 4px solid #fff; box-shadow: 0 0 0 2px var(--accent-color); }
+        .station-header { margin-bottom: 20px; }
+        .station-title { font-size: 1.8rem; color: var(--primary-color); display: flex; align-items: center; gap: 10px; }
+        .badge { font-size: 0.8rem; background: var(--accent-color); color: white; padding: 2px 8px; border-radius: 12px; vertical-align: middle; }
 
         /* 内容卡片 */
-        .content-card {
-            background: white;
-            padding: 25px;
-            border-radius: 8px;
-            box-shadow: var(--card-shadow);
-            margin-bottom: 20px;
-        }
-
-        .concept-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-top: 15px;
-        }
-
-        .concept-item {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 6px;
-            border: 1px solid #eee;
-        }
-
+        .content-card { background: white; padding: 25px; border-radius: 8px; box-shadow: var(--card-shadow); margin-bottom: 20px; }
+        .concept-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 15px; }
+        .concept-item { background: #f8f9fa; padding: 15px; border-radius: 6px; border: 1px solid #eee; }
         .concept-item h4 { color: var(--accent-color); margin-bottom: 8px; }
 
         /* 表格样式 */
-        .styled-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            font-size: 0.95em;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
-        }
-        
-        .styled-table thead tr {
-            background-color: var(--accent-color);
-            color: #ffffff;
-            text-align: left;
-        }
-        
-        .styled-table th, .styled-table td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #dddddd;
-        }
-        
+        .styled-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.95em; box-shadow: 0 0 20px rgba(0, 0, 0, 0.05); }
+        .styled-table thead tr { background-color: var(--accent-color); color: #ffffff; text-align: left; }
+        .styled-table th, .styled-table td { padding: 12px 15px; border-bottom: 1px solid #dddddd; }
         .styled-table tbody tr:nth-of-type(even) { background-color: #f3f3f3; }
 
         /* 模拟终端 - Linux实践 */
-        .terminal {
-            background-color: var(--code-bg);
-            color: #fff;
-            padding: 15px;
-            border-radius: 6px;
-            font-family: 'Consolas', 'Monaco', monospace;
-            margin-top: 20px;
-            position: relative;
-        }
-        .terminal::before {
-            content: "● ● ●";
-            color: #777;
-            font-size: 10px;
-            position: absolute;
-            top: 5px;
-            left: 10px;
-        }
+        .terminal { background-color: var(--code-bg); color: #fff; padding: 15px; border-radius: 6px; font-family: 'Consolas', 'Monaco', monospace; margin-top: 20px; position: relative; }
+        .terminal::before { content: "● ● ●"; color: #777; font-size: 10px; position: absolute; top: 5px; left: 10px; }
         .terminal-content { margin-top: 15px; }
         .cmd { color: var(--code-text); }
         .comment { color: #888; font-style: italic; }
 
         /* 交互折叠面板 */
-        .accordion {
-            background-color: #eee;
-            color: #444;
-            cursor: pointer;
-            padding: 18px;
-            width: 100%;
-            border: none;
-            text-align: left;
-            outline: none;
-            font-size: 1rem;
-            transition: 0.4s;
-            border-radius: 5px;
-            margin-top: 10px;
-            font-weight: bold;
-            display: flex;
-            justify-content: space-between;
-        }
-
+        .accordion { background-color: #eee; color: #444; cursor: pointer; padding: 18px; width: 100%; border: none; text-align: left; outline: none; font-size: 1rem; transition: 0.4s; border-radius: 5px; margin-top: 10px; font-weight: bold; display: flex; justify-content: space-between; }
         .accordion:hover { background-color: #ccc; }
-        
-        .accordion:after {
-            content: '\002B'; /* Plus sign */
-            font-weight: bold;
-            float: right;
-        }
-        
-        .accordion.active:after { content: "\2212"; /* Minus sign */ }
-
-        .panel {
-            padding: 0 18px;
-            background-color: white;
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.2s ease-out;
-            border-left: 3px solid #ccc;
-        }
+        .accordion:after { content: '\002B'; font-weight: bold; float: right; }
+        .accordion.active:after { content: "\2212"; }
+        .panel { padding: 0 18px; background-color: white; max-height: 0; overflow: hidden; transition: max-height 0.2s ease-out; border-left: 3px solid #ccc; }
 
         /* 叙事桥梁 */
-        .bridge {
-            font-style: italic;
-            color: #666;
-            margin: 20px 0;
-            padding: 15px;
-            border-top: 1px dashed #ccc;
-            border-bottom: 1px dashed #ccc;
-            text-align: center;
-        }
+        .bridge { font-style: italic; color: #666; margin: 20px 0; padding: 15px; border-top: 1px dashed #ccc; border-bottom: 1px dashed #ccc; text-align: center; }
 
         /* 结尾 */
-        .outro {
-            background: linear-gradient(135deg, #1abc9c, #16a085);
-            color: white;
-            padding: 40px;
+        .outro { background: linear-gradient(135deg, #1abc9c, #16a085); color: white; padding: 40px; border-radius: 10px; text-align: center; }
+
+        /* ================= 核心概念手册模态框样式 ================= */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 2000; 
+            left: 0; top: 0; width: 100%; height: 100%; 
+            background-color: var(--modal-bg);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content-wrapper {
+            background-color: #fefefe;
+            margin: 2% auto;
+            width: 90%;
+            height: 90%;
             border-radius: 10px;
-            text-align: center;
+            display: flex;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* 手册侧边栏 */
+        .guide-sidebar {
+            width: 250px;
+            background: #f1f4f6;
+            border-right: 1px solid #ddd;
+            overflow-y: auto;
+            padding: 20px;
+            flex-shrink: 0;
         }
         
-        .btn-action {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 10px 25px;
-            background: white;
-            color: #16a085;
-            text-decoration: none;
-            border-radius: 25px;
-            font-weight: bold;
-            transition: transform 0.2s;
+        .guide-sidebar h3 { font-size: 1.1rem; color: var(--primary-color); margin-bottom: 15px; border-bottom: 2px solid var(--accent-color); padding-bottom: 5px; }
+        .guide-nav-item { display: block; padding: 10px; color: #555; text-decoration: none; border-radius: 4px; margin-bottom: 2px; font-size: 0.9rem; }
+        .guide-nav-item:hover { background: #e2e6ea; color: var(--accent-color); }
+        .guide-nav-item.active { background: var(--accent-color); color: white; }
+
+        /* 手册内容区 */
+        .guide-body {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+            scroll-behavior: smooth;
         }
-        .btn-action:hover { transform: scale(1.05); }
+
+        .guide-section { margin-bottom: 60px; scroll-margin-top: 20px; }
+        .guide-section h2 { color: var(--primary-color); border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 20px; }
+        .guide-section h3 { color: var(--accent-color); margin-top: 30px; margin-bottom: 15px; }
+        
+        /* 比喻盒子 */
+        .metaphor-box {
+            background: #e8f6f3;
+            border: 1px solid #1abc9c;
+            border-left: 5px solid #1abc9c;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            position: relative;
+        }
+        .metaphor-box::before {
+            content: '💡 核心比喻';
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: #1abc9c;
+            color: white;
+            padding: 2px 10px;
+            font-size: 0.8rem;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 25px;
+            color: white;
+            font-size: 35px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 2001;
+            transition: color 0.3s;
+        }
+        .close-btn:hover { color: var(--secondary-color); }
+        
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .modal-content-wrapper { flexDirection: column; width: 100%; height: 100%; margin: 0; border-radius: 0; }
+            .guide-sidebar { width: 100%; height: 150px; border-right: none; border-bottom: 1px solid #ddd; }
+            .close-btn { top: 10px; right: 10px; color: #333; }
+        }
 
     </style>
 </head>
@@ -308,9 +199,136 @@
 
 <div id="progress-container"><div id="progress-bar"></div></div>
 
+<div id="guideModal" class="modal">
+    <span class="close-btn" onclick="toggleGuide()">×</span>
+    <div class="modal-content-wrapper">
+        <div class="guide-sidebar">
+            <h3>📖 入门指南导航</h3>
+            <a href="#g-intro" class="guide-nav-item">0. 引言：数字管家</a>
+            <a href="#g-overview" class="guide-nav-item">1. 概论：全能管家</a>
+            <a href="#g-cpu" class="guide-nav-item">2. 处理器：调度大脑</a>
+            <a href="#g-mem" class="guide-nav-item">3. 存储：工作空间</a>
+            <a href="#g-dev" class="guide-nav-item">4. 设备：指挥硬件</a>
+            <a href="#g-file" class="guide-nav-item">5. 文件：图书管理</a>
+        </div>
+        <div class="guide-body">
+            
+            <div id="g-intro" class="guide-section">
+                <h1>操作系统核心概念入门指南</h1>
+                <div class="metaphor-box">
+                    <p><strong>餐厅经理的比喻：</strong><br>
+                    想象一家繁忙的高级餐厅。谁来确保每一道菜都能被正确、高效地制作并送到正确的餐桌上？是餐厅的经理。他虽然不亲自炒菜或端盘子，却是指挥这一切顺畅运转的核心。<br><br>
+                    <strong>操作系统 (OS)</strong> 就是这位“餐厅经理”，它是计算机系统的核心和灵魂。</p>
+                </div>
+            </div>
+
+            <div id="g-overview" class="guide-section">
+                <h2>1. 操作系统概论：认识这位全能管家</h2>
+                <h3>1.1 硬件与用户之间的桥梁</h3>
+                <p>操作系统位于计算机硬件（CPU、内存、硬盘）之上，应用软件之下。它扮演着两个角色：</p>
+                <ul>
+                    <li><strong>接口提供者：</strong>将复杂的硬件指令封装成简单的命令（如“复制文件”）。</li>
+                    <li><strong>资源管理者：</strong>公平、高效地分配CPU时间、内存空间等有限资源。</li>
+                </ul>
+
+                <h3>1.2 五大核心管理职能</h3>
+                <div class="concept-grid">
+                    <div class="concept-item">🧠 <strong>处理器管理</strong> (CPU)</div>
+                    <div class="concept-item">🏠 <strong>存储管理</strong> (内存/RAM)</div>
+                    <div class="concept-item">🖨️ <strong>设备管理</strong> (I/O设备)</div>
+                    <div class="concept-item">📂 <strong>文件管理</strong> (硬盘/数据)</div>
+                    <div class="concept-item">🌐 <strong>联网管理</strong> (通信)</div>
+                </div>
+
+                <h3>1.3 演进史</h3>
+                <ul>
+                    <li><strong>批处理：</strong>解决人工操作低效问题。</li>
+                    <li><strong>多道程序：</strong>解决CPU等待I/O时的闲置问题。</li>
+                    <li><strong>分时系统：</strong>解决人机交互需求，让用户感觉“独占”。</li>
+                </ul>
+            </div>
+
+            <div id="g-cpu" class="guide-section">
+                <h2>2. 处理器管理：调度计算机的“大脑”</h2>
+                
+                <div class="metaphor-box">
+                    <p><strong>厨房与厨师：</strong><br>
+                    <strong>进程 (Process)</strong> 就像拥有全套厨具和食材的“厨房”（资源分配单位）。<br>
+                    <strong>线程 (Thread)</strong> 就像厨房里干活的“厨师”（CPU调度单位）。一个厨房可以有多个厨师协作。</p>
+                </div>
+
+                <h3>2.1 进程 vs 线程</h3>
+                <table class="styled-table">
+                    <thead>
+                        <tr>
+                            <th>特性</th>
+                            <th>进程 (Process)</th>
+                            <th>线程 (Thread)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>角色</td>
+                            <td>资源分配的基本单位</td>
+                            <td>CPU调度的基本单位</td>
+                        </tr>
+                        <tr>
+                            <td>开销</td>
+                            <td>大（独立地址空间）</td>
+                            <td>小（共享资源）</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>2.2 核心调度算法</h3>
+                <ul>
+                    <li><strong>FCFS (先来先服务)：</strong> 公平但可能导致长作业阻塞短作业。</li>
+                    <li><strong>RR (时间片轮转)：</strong> 适合分时系统，雨露均沾。</li>
+                </ul>
+            </div>
+
+            <div id="g-mem" class="guide-section">
+                <h2>3. 存储管理：规划程序的“工作空间”</h2>
+                
+                <h3>3.1 分页存储 (Paging)</h3>
+                <p>把程序拆成固定大小的“页面”，随意存放在内存的任何空闲位置。彻底消除了<strong>外部碎片</strong>。</p>
+
+                <h3>3.2 虚拟内存 (Virtual Memory)</h3>
+                <div class="metaphor-box">
+                    <p><strong>黑科技：</strong><br>
+                    利用“按需调页”，让只有 8GB 内存的电脑能运行 16GB 的游戏。它制造了一个“每个程序都独享巨大内存”的假象。</p>
+                </div>
+            </div>
+
+            <div id="g-dev" class="guide-section">
+                <h2>4. 设备管理：指挥庞杂的外部设备</h2>
+                <h3>4.1 两大法宝</h3>
+                <ul>
+                    <li><strong>缓冲技术 (Buffering)：</strong> 在CPU和慢速设备间建立缓冲区，减少CPU等待。</li>
+                    <li><strong>SPOOLing (虚拟设备)：</strong> 将独占设备（如打印机）改造为共享设备。</li>
+                </ul>
+            </div>
+
+            <div id="g-file" class="guide-section">
+                <h2>5. 文件管理：整理信息的“图书管理员”</h2>
+                <h3>5.1 文件的抽象</h3>
+                <p>操作系统将磁盘上的扇区抽象为<strong>“文件”</strong>，并通过<strong>“树状目录结构”</strong>进行组织。</p>
+                <h3>5.2 逻辑 vs 物理</h3>
+                <p>用户看到的是连续的文件（逻辑结构），而在磁盘上数据可能是分散存储的（物理结构）。操作系统负责这层复杂的映射。</p>
+                
+                <hr style="margin: 30px 0; border: 0; border-top: 1px solid #ddd;">
+                <p style="text-align: center; color: #666;">
+                    <em>这五大模块环环相扣，共同构成了现代计算机系统的坚固基石。</em>
+                </p>
+            </div>
+
+        </div>
+    </div>
+</div>
+
 <div class="container">
     <nav class="sidebar">
-        <h3 style="margin-bottom: 15px; padding-left: 10px;">学习导航</h3>
+        <h3 style="margin-bottom: 15px; padding-left: 10px;">学习路径</h3>
         <a href="#intro" class="nav-link">前言</a>
         <a href="#station1" class="nav-link">第一站：概论</a>
         <a href="#station2" class="nav-link">第二站：处理器管理</a>
@@ -325,6 +343,10 @@
         <header id="intro">
             <h1>操作系统原理：从入门到精通</h1>
             <p>连接冰冷硬件与强大应用软件的桥梁，理解计算机工作的本质。</p>
+            
+            <button class="btn-guide" onclick="toggleGuide()">
+                📖 打开核心概念手册
+            </button>
         </header>
 
         <div class="prerequisites">
@@ -592,6 +614,27 @@
 </footer>
 
 <script>
+    // 模态框逻辑
+    function toggleGuide() {
+        var modal = document.getElementById("guideModal");
+        if (modal.style.display === "block") {
+            modal.style.display = "none";
+            document.body.style.overflow = "auto"; // 恢复背景滚动
+        } else {
+            modal.style.display = "block";
+            document.body.style.overflow = "hidden"; // 禁止背景滚动
+        }
+    }
+
+    // 点击模态框外部关闭
+    window.onclick = function(event) {
+        var modal = document.getElementById("guideModal");
+        if (event.target == modal) {
+            modal.style.display = "none";
+            document.body.style.overflow = "auto";
+        }
+    }
+
     // 折叠面板逻辑
     var acc = document.getElementsByClassName("accordion");
     for (var i = 0; i < acc.length; i++) {
@@ -614,7 +657,7 @@
         var scrolled = (winScroll / height) * 100;
         document.getElementById("progress-bar").style.width = scrolled + "%";
 
-        // 侧边栏高亮
+        // 侧边栏高亮 (仅主页面)
         var sections = document.querySelectorAll('section, header');
         var navLinks = document.querySelectorAll('.nav-link');
         
